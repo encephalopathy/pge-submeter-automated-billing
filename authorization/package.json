@@ -1,0 +1,13 @@
+{
+  "name": "gmail-otp-auth",
+  "version": "1.0.0",
+  "description": "One-time setup to generate Gmail Refresh Token",
+  "main": "index.js",
+  "scripts": {
+    "auth": "node index.js"
+  },
+  "dependencies": {
+    "@google-cloud/local-auth": "^2.1.0",
+    "googleapis": "^105.0.0"
+  }
+}

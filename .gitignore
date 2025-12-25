@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Local Google API Secrets (Critical)
+credentials.json
+token.json
+
+# Playwright Authentication Sessions
+.auth/
+playwright/.auth/
+
+# Playwright Reports and Screenshots
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Local Environment Variables
+.env
+.env.local
+
+# System Files
+.DS_Store
+Thumbs.db
