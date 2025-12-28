@@ -3,10 +3,10 @@
     "target": "ES2020",
     "module": "CommonJS",
     "moduleResolution": "Node",
-    "types": ["node", "@playwright/test"],
+    "types": ["node", "jest", "@playwright/test"],
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "include": ["tests/**/*.ts", "playwright.config.ts"]
+  "include": ["src/**/*.ts", "tests/**/*.ts", "playwright.config.ts"]
 }

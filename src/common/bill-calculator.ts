@@ -1,12 +1,11 @@
 import { extractGasTotalBill, extractThermsUsage, extractUsageDates, extractGasBillPage } from './pge-pdf-bill-extractor'
 import { getGasSubmeterUsage } from './encompass-io-api-client';
-import { AbortException } from 'pdfjs-dist';
 
 export async function calculateGasBill(pdfPages: Array<string>) : Promise<any> {
     const gasBillPage = extractGasBillPage(pdfPages);
 
     if (gasBillPage == null) {
-        throw new AbortException("Unable to find the gas usage page.");
+        throw new Error("Unable to find the gas usage page.");
     }
 
     const dates = extractUsageDates(gasBillPage);
@@ -14,7 +13,7 @@ export async function calculateGasBill(pdfPages: Array<string>) : Promise<any> {
     const totalCost = extractGasTotalBill(gasBillPage);
 
     if (thermsUsageTotal == 0) {
-        return { gasBillMain: 0, gasBillAdu: 0 }
+        return { gasBillMain: 0, gasBillAdu: 0, dates: null }
     }
 
     const gasUsageADU = await getGasSubmeterUsage(dates);
@@ -23,7 +22,7 @@ export async function calculateGasBill(pdfPages: Array<string>) : Promise<any> {
     const mainHouseGasBill = amountUsedByMain * totalCost;
     const aduGasBill = totalCost - (amountUsedByMain * totalCost);
 
-    return { gasBillMain: mainHouseGasBill, gasBillAdu: aduGasBill, dates: dates }
+    return { gasBillMain: Number(mainHouseGasBill.toFixed(2)), gasBillAdu: Number(aduGasBill.toFixed(2)), dates: dates }
 }
 
 export function assemblePaymentRequestTargets(bill: { gasBillMain: number, gasBillAdu: number, dates: {start: string, end:string} }): any {

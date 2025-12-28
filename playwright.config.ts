@@ -1,7 +1,7 @@
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
-  testDir: './tests',
+  testDir: './src/scripts',
   timeout: 60_000,
   use: {
     headless: false,               // IMPORTANT for CAPTCHA/MFA
