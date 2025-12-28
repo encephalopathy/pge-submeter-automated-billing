@@ -4,7 +4,7 @@ import * as pgeBillParser from '../src/common/pge-pdf-bill-extractor';
 
 const validPGEDocument = "ENERGY STATEMENT  www.pge.com/MyEnergy  Account No: 1111111111-4  Statement Date:   11/25/2025  Due Date:   12/16/2025  Visit   www.pge.com/MyEnergy   for a detailed bill comparison.   link  Gas Usage This Period:22.0 Therms 32 billing days Average Daily Usage 0.6875 Therms For 10/17 2025 Therms used 1.059974 For 10/19 2025 Therms used 1.059974 For 10/20 2025 Therms used 1.059974 For 10/22 2025 Therms used 1.059974 For 10/24 2025 Therms used 1.059974 For 10/26 2025 Therms used 1.059974 For 10/27 2025 Therms used 1.059974 For 10/29 2025 Therms used 1.059974 For 10/31 2025 Therms used 1.059974 For 11/02 2025 Therms used 1.059974 For 11/03 2025 Therms used 1.059974 For 11/05 2025 Therms used 1.059974 For 11/06 2025 Therms used 1.059974 For 11/07 2025 Therms used 1.059974 For 11/08 2025 Therms used 1.059974 For 11/09 2025 Therms used 1.059974 For 11/11 2025 Therms used 1.059974 For 11/12 2025 Therms used 1.059974 For 11/14 2025 Therms used 1.059974 For 11/15 2025 Therms used 1.059974 For 11/16 2025 Therms used 1.059974  Page 8 of 9  Details of Gas Charges  10/17/2025 - 11/17/2025 (32 billing days)  Service For:   xxxxx POOP WAY  Service Agreement ID:   1111111111  Rate Schedule:   G1 X Residential Service  10/17/2025 – 10/31/2025   Your Tier Usage   1   2  .  Tier 1 Allowance   7.35   Therms   (15 days   x   0.49 Therms/day)  Tier 1 Usage   7.350000 Therms   @   $2.52299   $18.54  Tier 2 Usage   2.962500 Therms   @   $3.03685   9.00  Gas PPP Surcharge ($0.14324 /Therm)   1.48  Poop Utility Users' Tax (5.500%)   1.51  11/01/2025 – 11/17/2025   Your Tier Usage   1   2  .  Tier 1 Allowance   25.16   Therms   (17 days   x   1.48 Therms/day)  Tier 1 Usage   11.687500 Therms   @   $2.63904   $30.84  Gas PPP Surcharge ($0.14324 /Therm)   1.67  Poop Utility Users' Tax (5.500%)   1.70  Total Gas Charges   $64.74  Average Daily Usage (Therms / day)  Last Year   Last Period   Current Period N/A   0.60   0.69  Service Information  Meter #   11111111  Current Meter Reading   6,990  Prior Meter Reading   6,969  Difference   21  Multiplier   1.059974  Total Usage   22.000000 Therms  Baseline Territory   X  Serial   W  Gas Procurement Costs ($/Therm)  10/17/2025 - 10/31/2025   $0.41601  11/01/2025 - 11/17/2025   $0.53206  Gas Usage This Period: 22.000000 Therms, 32 billing days  Therms   =   Average Daily Usage 0.69  10/17   10/20   10/23   10/26   10/29   11/01   11/04   11/07   11/10   11/13   11/16  0  1  2  3  4 5";
 
-describe('PG&E Billing', () => {
+describe('PG&E Billing - PDF Parsing', () => {
     test('given no gas bill page found - no pg&e data is extracted', async () => {
         // setup
         const pages = [
@@ -50,7 +50,7 @@ describe('PG&E Billing', () => {
         expect(bill.dates.start).toBe('10/17/2025');
         expect(bill.dates.end).toBe('11/17/2025');
     });
-    test('given pg&e gas bill - parse dates correctly', async () => {
+    test('given pg&e gas bill - parse dates correctly', () => {
         // act
         const dates = pgeBillParser.extractUsageDates(validPGEDocument);
 
@@ -59,11 +59,101 @@ describe('PG&E Billing', () => {
         expect(dates!.start).toBe('10/17/2025');
         expect(dates!.end).toBe('11/17/2025');
     });
-    test('given pg&e gas bill - parse therms correctly', async () => {
+    test('given pg&e gas bill - parse therms correctly', () => {
         // act
         const gasUsage = pgeBillParser.extractThermsUsage(validPGEDocument);
 
         // verify
         expect(gasUsage).toBe(21);
+    });
+});
+
+describe('PG&E Billing - Encompass API Invocation', () => {
+    test('given pg&e usage dates - encompass api parses dates correctly and returns usage information', async () => {
+        // setup
+        const mockResponse = [
+            {
+                "End_Time_Stamp_UTC_ms": 1763366399175,
+                "Start_Time_Stamp_UTC_ms": 1763280000345,
+                "End_Date": "Sun Nov 16 2025 23:59:59 -0800 Pacific Standard Time",
+                "Start_Date": "Sun Nov 16 2025 00:00:00 -0800 Pacific Standard Time",
+                "Meter": 350011401,
+                "Count": 165621,
+                "Protocol": "v4",
+                "Pulse_Cnt_1_First": 16718,
+                "Pulse_Cnt_1_Last": 16745,
+                "Pulse_Cnt_1_Diff": 27,
+                "Pulse_Cnt_1_DeltaMax": 1,
+                "Pulse_Cnt_2_First": 6,
+                "Pulse_Cnt_2_Last": 6,
+                "Pulse_Cnt_2_Diff": 0,
+                "Pulse_Cnt_2_DeltaMax": 0,
+                "Pulse_Cnt_3_First": 6,
+                "Pulse_Cnt_3_Last": 6,
+                "Pulse_Cnt_3_Diff": 0,
+                "Pulse_Cnt_3_DeltaMax": 0
+              },
+              {
+                "End_Time_Stamp_UTC_ms": 1763279999780,
+                "Start_Time_Stamp_UTC_ms": 1763193600182,
+                "End_Date": "Sat Nov 15 2025 23:59:59 -0800 Pacific Standard Time",
+                "Start_Date": "Sat Nov 15 2025 00:00:00 -0800 Pacific Standard Time",
+                "Meter": 350011401,
+                "Count": 166911,
+                "Protocol": "v4",
+                "Pulse_Cnt_1_First": 16684,
+                "Pulse_Cnt_1_Last": 16718,
+                "Pulse_Cnt_1_Diff": 34,
+                "Pulse_Cnt_1_DeltaMax": 1,
+                "Pulse_Cnt_2_First": 6,
+                "Pulse_Cnt_2_Last": 6,
+                "Pulse_Cnt_2_Diff": 0,
+                "Pulse_Cnt_2_DeltaMax": 0,
+                "Pulse_Cnt_3_First": 6,
+                "Pulse_Cnt_3_Last": 6,
+                "Pulse_Cnt_3_Diff": 0,
+                "Pulse_Cnt_3_DeltaMax": 0
+              }
+        ];
+        const startDate = '10/17/2025';
+        const endDate = '11/17/2025';
+        const fetchSpy = jest.spyOn(global, 'fetch').mockImplementation(() =>
+            Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve(mockResponse),
+            } as Response)
+        );
+
+        // act
+        const result = await encompassApiClient.getGasSubmeterUsage(
+            {
+                start: startDate,
+                end: endDate
+            }
+        );
+        fetchSpy.mockRestore();
+
+        // verify
+        expect(result).toEqual(1.5351266099999998);
+    });
+    test('given pg&e usage dates - when unable to connect to PG&E', async () => {
+        // setup
+        const fetchSpy = jest.spyOn(global, 'fetch').mockRejectedValue(
+            new Error('Failed to fetch')
+        );
+        const startDate = '10/17/2025';
+        const endDate = '11/17/2025';
+
+        // act
+        const result = await encompassApiClient.getGasSubmeterUsage(
+            {
+                start: startDate,
+                end: endDate
+            }
+        );
+        fetchSpy.mockRestore();
+
+        // verify
+        await expect(result).toBe(0);
     });
 });
