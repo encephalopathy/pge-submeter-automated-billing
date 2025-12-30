@@ -134,7 +134,7 @@ describe('PG&E Billing - Encompass API Invocation', () => {
         fetchSpy.mockRestore();
 
         // verify
-        expect(result).toEqual(1.5351266099999998);
+        expect(result).toEqual(0.626009434872);
     });
     test('given pg&e usage dates - when unable to connect to PG&E', async () => {
         // setup

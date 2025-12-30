@@ -2,7 +2,7 @@ import { test, expect, Locator, Page } from '@playwright/test';
 import * as dotenv from 'dotenv';
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { calculateGasBill, assemblePaymentRequestTargets } from '../common/bill-calculator';
-import { getGmailAuth, getOTP, sendBill } from '../common/gmail-client';
+import { getGmailAuth, getMessage, getOTP, sendBill } from '../common/gmail-client';
 import { OAuth2Client } from 'google-auth-library';
 
 dotenv.config();
@@ -43,16 +43,14 @@ async function extractTextFromBlob(newPage: any): Promise<Array<string>> {
     return pageContent;
 }
 
-async function enterOtpCode(page: Page): Promise<OAuth2Client | undefined> {
+async function enterOtpCode(authClient: OAuth2Client, page: Page) {
 
     let errorText: Locator | undefined = undefined;
     let iterationCount = 0;
-    let authClient: OAuth2Client | undefined = undefined;
     do {
         // 7. Wait 10 seconds for the OTP email to come through
         await page.waitForTimeout(10000);
 
-        authClient = await getGmailAuth();
         const otp = await getOTP(authClient);
 
         // 8. Fill otp in PG&E security form, retry 3 times to accomplish this
@@ -63,6 +61,7 @@ async function enterOtpCode(page: Page): Promise<OAuth2Client | undefined> {
 
 
         await otpTextBox.click();
+        await otpTextBox.clear();
         const selectAll = process.platform === 'darwin' ? 'Meta+A' : 'Control+A';
         await page.waitForTimeout(100);
         await otpTextBox.press(selectAll);
@@ -78,13 +77,14 @@ async function enterOtpCode(page: Page): Promise<OAuth2Client | undefined> {
 
         // 9. Click confirm button to confirm OTP is correct
         await page.locator('button.PrimaryButton').first().click();
-
-        errorText = await page.locator("#error-21").first();
+        try {
+          await page.locator("#error-21").waitFor({ state: 'visible', timeout: 5000 });
+        }
+        catch(e) {
+        }
         iterationCount++;
     }
-    while (await errorText!.isVisible() && iterationCount < 3);
-
-    return authClient;
+    while (await page.locator("#error-21").isVisible() && iterationCount < 3);
 }
 
 test('PG&E UI Bot - Process Gas Billing', async ({ context, page }) => {
@@ -92,8 +92,14 @@ test('PG&E UI Bot - Process Gas Billing', async ({ context, page }) => {
     throw new Error('Missing PGE_USERNAME or PGE_PASSWORD env vars');
   }
 
-  // Check Email to see if the PG&E bill has come, if it has not skip this run.
+  const authClient = await getGmailAuth();
 
+  // Check Email to see if the PG&E bill has come, if it has not skip this run.
+  const billWasSentEmail = await getMessage(authClient, 'DoNotReply@billpay.pge.com subject:Your PG&E Energy Statement is Ready to View');
+  if (billWasSentEmail.date?.getMonth() != new Date().getMonth()) {
+    console.log("The PG&E bill was not emailed to us for this month yet.");
+    return;
+  }
   // 1. Go to PG&E login page
   await page.goto('https://myaccount.pge.com/myaccount/s/login/?language=en_US', {
     waitUntil: 'domcontentloaded'
@@ -114,7 +120,7 @@ test('PG&E UI Bot - Process Gas Billing', async ({ context, page }) => {
   // 6. Click on email to send to OTP
   await page.locator('button.PrimaryButton, button[type="button"]').first().click();
 
-  const authClient = await enterOtpCode(page);
+  await enterOtpCode(authClient, page);
 
   // 10. Await for the page to be loaded.
   await expect(page).toHaveURL(/myaccount|dashboard|home/i);
@@ -124,7 +130,21 @@ test('PG&E UI Bot - Process Gas Billing', async ({ context, page }) => {
   const newPagePromise = context.waitForEvent('page', { timeout: 30000});
 
   // 11. Click on the view bill link
-  await page.getByRole('link', { name: 'View Current Bill', exact: true }).first().click();
+  const viewBillButton = await page.getByRole('link', { name: 'View Current Bill', exact: true }).first();
+
+  // View Bill button is sometimes not there so find the first bill in the history of recent bills
+  if (!await viewBillButton.isVisible()) {
+    const viewBillingHistoryButton = await page.getByTitle("View Billing & Payment History").first();
+    viewBillingHistoryButton.click();
+    await expect(page).toHaveURL(/bill-and-payment-history/i);
+    await page.waitForTimeout(5000);
+    const viewBillButton = await page.getByText('View Bill PDF').first();
+    viewBillButton.click();
+  }
+  else {
+  // click on the view bill button
+    viewBillButton.click();
+  }
 
   const newPage = await newPagePromise;
 

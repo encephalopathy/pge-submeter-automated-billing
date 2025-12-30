@@ -16,18 +16,19 @@ export async function getGmailAuth(): Promise<OAuth2Client> {
     return auth;
 }
 
-export async function getOTP(auth: OAuth2Client) : Promise<string> {
+export async function getMessage(auth: OAuth2Client, query: string): Promise<{ msg: string | null | undefined, date: Date | null}> {
+  
   const gmail = google.gmail({ version: 'v1', auth });
 
   // 1. Find the most recent OTP email from PG&E
   const res = await gmail.users.messages.list({
     userId: 'me',
-    q: 'no-reply@myacct.pge.com subject:"Please find your security code"',
+    q: query,
     maxResults: 1
   });
 
   const messageId = res.data.messages?.[0]?.id;
-  if (!messageId) return "";
+  if (!messageId) return { msg: "", date: null};
 
   // 2. Get the full message content
   const msg = await gmail.users.messages.get({
@@ -38,8 +39,18 @@ export async function getOTP(auth: OAuth2Client) : Promise<string> {
 
   // 3. Decode body and extract 6-digit code
   const body = msg.data.snippet;
-  const otpMatch = body?.match(/\b\d{6}\b/); // Regex for 6 consecutive digits
   
+  const internalDate = msg.data.internalDate; // Epoch ms
+  const date = new Date(parseInt(internalDate!));
+
+  return { msg: body, date: date };
+}
+
+export async function getOTP(auth: OAuth2Client) : Promise<string> {
+  const lastEmail = await getMessage(auth, 'no-reply@myacct.pge.com subject:"Please find your security code"');
+
+  const otpMatch = lastEmail.msg?.match(/\b\d{6}\b/); // Regex for 6 consecutive digits
+
   return otpMatch ? otpMatch[0] : "";
 }
 

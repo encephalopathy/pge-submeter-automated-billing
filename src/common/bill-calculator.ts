@@ -33,13 +33,13 @@ export function assemblePaymentRequestTargets(bill: { gasBillMain: number, gasBi
 
     return {
         main: {
-            reciepients: recipientMain,
+            recipients: recipientMain,
             address: recipientAddressMain,
             amount: bill.gasBillMain,
             dates: bill.dates
         },
         adu: {
-            reciepients: recipientADU,
+            recipients: recipientADU,
             address: recipientAddressADU,
             amount: bill.gasBillAdu,
             dates: bill.dates
