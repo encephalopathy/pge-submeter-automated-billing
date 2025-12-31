@@ -35,23 +35,6 @@ function formatToCustomString(date: Date): string {
     return `${year}${month}${day}${hours}${minutes}`;
 }
 
-function getElapsedDays(date1: Date, date2: Date): number {
-    // 1. Get the time in milliseconds for both dates
-    const time1 = date1.getTime();
-    const time2 = date2.getTime();
-
-    // 2. Calculate the difference in milliseconds
-    // Use Math.abs if you only want a positive number regardless of order
-    const diffInMs = Math.abs(time2 - time1);
-
-    // 3. Define milliseconds in a day (1000ms * 60s * 60m * 24h)
-    const msInDay = 1000 * 60 * 60 * 24;
-
-    // 4. Divide and round
-    // Use Math.round to handle potential Daylight Saving Time shifts
-    return Math.round(diffInMs / msInDay);
-}
-
 export async function getGasSubmeterUsage(dates: {start: string, end: string} | null): Promise<number> {
     if (dates == null) return 0;
 
