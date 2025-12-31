@@ -73,47 +73,26 @@ describe('PG&E Billing - Encompass API Invocation', () => {
         // setup
         const mockResponse = [
             {
-                "End_Time_Stamp_UTC_ms": 1763366399175,
-                "Start_Time_Stamp_UTC_ms": 1763280000345,
-                "End_Date": "Sun Nov 16 2025 23:59:59 -0800 Pacific Standard Time",
-                "Start_Date": "Sun Nov 16 2025 00:00:00 -0800 Pacific Standard Time",
-                "Meter": 350011401,
-                "Count": 165621,
-                "Protocol": "v4",
-                "Pulse_Cnt_1_First": 16718,
-                "Pulse_Cnt_1_Last": 16745,
-                "Pulse_Cnt_1_Diff": 27,
-                "Pulse_Cnt_1_DeltaMax": 1,
-                "Pulse_Cnt_2_First": 6,
-                "Pulse_Cnt_2_Last": 6,
-                "Pulse_Cnt_2_Diff": 0,
-                "Pulse_Cnt_2_DeltaMax": 0,
-                "Pulse_Cnt_3_First": 6,
-                "Pulse_Cnt_3_Last": 6,
-                "Pulse_Cnt_3_Diff": 0,
-                "Pulse_Cnt_3_DeltaMax": 0
-              },
-              {
-                "End_Time_Stamp_UTC_ms": 1763279999780,
-                "Start_Time_Stamp_UTC_ms": 1763193600182,
-                "End_Date": "Sat Nov 15 2025 23:59:59 -0800 Pacific Standard Time",
-                "Start_Date": "Sat Nov 15 2025 00:00:00 -0800 Pacific Standard Time",
-                "Meter": 350011401,
-                "Count": 166911,
-                "Protocol": "v4",
-                "Pulse_Cnt_1_First": 16684,
-                "Pulse_Cnt_1_Last": 16718,
-                "Pulse_Cnt_1_Diff": 34,
-                "Pulse_Cnt_1_DeltaMax": 1,
-                "Pulse_Cnt_2_First": 6,
-                "Pulse_Cnt_2_Last": 6,
-                "Pulse_Cnt_2_Diff": 0,
-                "Pulse_Cnt_2_DeltaMax": 0,
-                "Pulse_Cnt_3_First": 6,
-                "Pulse_Cnt_3_Last": 6,
-                "Pulse_Cnt_3_Diff": 0,
-                "Pulse_Cnt_3_DeltaMax": 0
-              }
+              "End_Time_Stamp_UTC_ms": 1766044799093,
+              "Start_Time_Stamp_UTC_ms": 1763452800538,
+              "End_Date": "Wed Dec 17 2025 23:59:59 -0800 Pacific Standard Time",
+              "Start_Date": "Tue Nov 18 2025 00:00:00 -0800 Pacific Standard Time",
+              "Meter": 350011401,
+              "Count": 4913823,
+              "Protocol": "v4",
+              "Pulse_Cnt_1_First": 16761,
+              "Pulse_Cnt_1_Last": 19093,
+              "Pulse_Cnt_1_Diff": 2332,
+              "Pulse_Cnt_1_DeltaMax": 3,
+              "Pulse_Cnt_2_First": 6,
+              "Pulse_Cnt_2_Last": 6,
+              "Pulse_Cnt_2_Diff": 0,
+              "Pulse_Cnt_2_DeltaMax": 0,
+              "Pulse_Cnt_3_First": 6,
+              "Pulse_Cnt_3_Last": 6,
+              "Pulse_Cnt_3_Diff": 0,
+              "Pulse_Cnt_3_DeltaMax": 0
+            }
         ];
         const startDate = '10/17/2025';
         const endDate = '11/17/2025';
@@ -134,7 +113,7 @@ describe('PG&E Billing - Encompass API Invocation', () => {
         fetchSpy.mockRestore();
 
         // verify
-        expect(result).toEqual(0.626009434872);
+        expect(result).toEqual(23.32);
     });
     test('given pg&e usage dates - when unable to connect to PG&E', async () => {
         // setup

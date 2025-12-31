@@ -61,21 +61,16 @@ export async function getGasSubmeterUsage(dates: {start: string, end: string} | 
     const endDate = new Date(dates.end);
 
     // include up until the last day of the bill date
-    endDate.setDate(endDate.getDate());
-    const limit = getElapsedDays(startDate, endDate);
+    endDate.setDate(endDate.getDate() + 1);
     const formattedStartDate = formatToCustomString(startDate);
     const formattedEndDate = formatToCustomString(endDate);
     try {
-        const endpoint = `https://summary.ekmmetering.com/summary/api/v2/meter?key=${accessKey}&format=json&fields=Pulse_Cnt_1~Pulse_Cnt_2~Pulse_Cnt_3&timezone=America~Los_Angeles&devices=${deviceId}&start_date=${formattedStartDate}&end_date=${formattedEndDate}&report=dy&limit=${limit}`;
+        const endpoint = `https://summary.ekmmetering.com/summary/api/v2/meter?key=${accessKey}&format=json&fields=Pulse_Cnt_1~Pulse_Cnt_2~Pulse_Cnt_3&timezone=America~Los_Angeles&devices=${deviceId}&start_date=${formattedStartDate}&end_date=${formattedEndDate}&report=range&limit=1`;
         const response = await fetch(endpoint);
         const data: MeterReading[] = await response.json();
-        let totalPulseCount = 0;
+        let totalPulseCount = data[0].Pulse_Cnt_1_Diff;
 
-        for (const reading of data) {
-            totalPulseCount += reading.Pulse_Cnt_1_Diff;
-        }
-
-        return totalPulseCount * 0.010262449752;
+        return totalPulseCount * 0.01;
     }
     catch (e) {
         console.error(e);
