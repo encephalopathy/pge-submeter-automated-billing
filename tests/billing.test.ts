@@ -94,8 +94,8 @@ describe('PG&E Billing - Encompass API Invocation', () => {
               "Pulse_Cnt_3_DeltaMax": 0
             }
         ];
-        const startDate = '10/17/2025';
-        const endDate = '11/17/2025';
+        const startDate = '11/18/2025';
+        const endDate = '12/17/2025';
         const fetchSpy = jest.spyOn(global, 'fetch').mockImplementation(() =>
             Promise.resolve({
             ok: true,
