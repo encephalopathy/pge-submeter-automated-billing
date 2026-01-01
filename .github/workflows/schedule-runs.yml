@@ -1,0 +1,46 @@
+name: Send PG&E Gas Bill Tenants
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Runs at 14:00 UTC on the 27th, 28th, 29th, 30th, and 31st
+    - cron: '0 14 27-31 * *'
+
+jobs:
+  renew-and-upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ----------------------------------------
+      # Checkout
+      # ----------------------------------------
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # ----------------------------------------
+      # Install Playwright
+      # ----------------------------------------
+      - name: Install Node dependencies
+        run: |
+          npm ci
+          npx playwright install --with-deps
+
+      # ----------------------------------------
+      # Run Playwright (headed) to upload to PG&E
+      # ----------------------------------------
+      - name: Process PG&E Gas Bill
+        env:
+          PGE_USERNAME: ${{ secrets.PGE_USERNAME }}
+          PGE_PASSWORD: ${{ secrets.PGE_PASSWORD }}
+          GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
+          GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
+          GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
+          ENCOMPASS_IO_ACCESS_KEY: ${{ secrets.ENCOMPASS_IO_ACCESS_KEY }}
+          ENCOMPASS_IO_DEVICE_ID: ${{ secrets.ENCOMPASS_IO_DEVICE_ID }}
+          ZELLE_EMAIL: ${{ secrets.ZELLE_EMAIL }}
+          ADDRESS_MAIN: ${{ secrets.ADDRESS_MAIN }}
+          ADDRESS_ADU: ${{ secrets.ADDRESS_ADU }}
+          ADDRESS_MAIN_RECIEPIENTS: ${{ secrets.ADDRESS_MAIN_RECIEPIENTS }}
+          ADDRESS_MAIN_RECIEPIENTS: ${{ secrets.ADDRESS_ADU_RECIEPIENTS }}
+        run: |
+          npm run bot
