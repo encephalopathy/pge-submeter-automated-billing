@@ -31,6 +31,7 @@ This system automates the extraction of gas usage and billing data to accurately
     - **ADDRESS_MAIN_RECIEPIENTS** (Email of tenant(s) living on the main side, this can be singular or comma separated)
     - **ADDRESS_ADU_RECIEPIENTS** (Email of tenant(s) living on the submetered side, this can be singular or comma separated)
 5. Tenants will receive an email daily the last 5 days of the month depending on when the bill is sent from PG&E.
+
 ## FAQ
 
 ### Why was an automated UI bot developed instead of utilizing the PG&E Share My Data API?
