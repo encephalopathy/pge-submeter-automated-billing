@@ -41,6 +41,6 @@ jobs:
           ADDRESS_MAIN: ${{ secrets.ADDRESS_MAIN }}
           ADDRESS_ADU: ${{ secrets.ADDRESS_ADU }}
           ADDRESS_MAIN_RECIEPIENTS: ${{ secrets.ADDRESS_MAIN_RECIEPIENTS }}
-          ADDRESS_MAIN_RECIEPIENTS: ${{ secrets.ADDRESS_ADU_RECIEPIENTS }}
+          ADDRESS_ADU_RECIEPIENTS: ${{ secrets.ADDRESS_ADU_RECIEPIENTS }}
         run: |
           npm run bot
