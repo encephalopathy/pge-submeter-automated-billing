@@ -74,11 +74,13 @@ export async function sendBill(auth: any,
     '',
     `Hello, this is your gas bill usage for the amount of $${amount.toFixed(2)} between ${startDate} and ${endDate}.`,
     `Please send this amount via Zelle to: ${zelleEmail}`,
+    `Please send this Zelle amount by end of the 1st of next month.`,
     '',
     '---',
     '',
     `Hola, este es su consumo de gas por la cantidad de $${amount.toFixed(2)} entre el ${startDate} y el ${endDate}.`,
-    `Por favor, envíe esta cantidad a través de Zelle a: ${zelleEmail}`
+    `Por favor, envíe esta cantidad a través de Zelle a: ${zelleEmail}`,
+    `Por favor, envíe este pago por Zelle antes de que termine el día 1 del próximo mes`
   ];
 
   const email = emailLines.join('\r\n');
