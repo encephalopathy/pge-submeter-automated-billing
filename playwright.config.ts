@@ -4,6 +4,7 @@ export default defineConfig({
   testDir: './src/scripts',
   timeout: 60_000,
   use: {
+    headless: process.env.CI === 'true',      // IMPORTANT for CAPTCHA/MFA
     viewport: { width: 1280, height: 800 },
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
