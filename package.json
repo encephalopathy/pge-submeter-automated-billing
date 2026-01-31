@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "private": true,
     "scripts": {
-        "bot": "playwright test --headless",
+        "bot": "playwright test",
         "bot:headed": "playwright test --headed",
         "bot:debug": "playwright test --debug",
         "test": "jest"
