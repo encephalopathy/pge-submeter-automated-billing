@@ -7,7 +7,7 @@ on:
     - cron: '0 18 27-31 * *'
 
 jobs:
-  renew-and-upload:
+  screen-scrape-and-send-bill:
     runs-on: ubuntu-latest
 
     steps:
