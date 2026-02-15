@@ -96,10 +96,11 @@ test('PG&E UI Bot - Process Gas Billing', async ({ context, page }) => {
 
   // Check Email to see if the PG&E bill has come, if it has not skip this run.
   const billWasSentEmail = await getMessage(authClient, 'DoNotReply@billpay.pge.com subject:Your PG&E Energy Statement is Ready to View');
-  // if (billWasSentEmail.date?.getMonth() != new Date().getMonth()) {
-  //   console.log("The PG&E bill was not emailed to us for this month yet.");
-  //   return;
-  // }
+  if (billWasSentEmail.date?.getMonth() != new Date().getMonth()) {
+    console.log("The PG&E bill was not emailed to us for this month yet.");
+    return;
+  }
+  
   // 1. Go to PG&E login page
   await page.goto('https://myaccount.pge.com/myaccount/s/login/?language=en_US', {
     waitUntil: 'domcontentloaded'
