@@ -118,7 +118,8 @@ test('PG&E UI Bot - Process Gas Billing', async ({ context, page }) => {
   await page.waitForSelector('text="We\'ll send a 6-digit security code to:"',{timeout:25000});
 
   // 6. Click on email to send to OTP
-  await page.locator('button.PrimaryButton, button[type="button"]').first().click();
+  const emailBtnSendOtp = await page.getByRole('button', { name: 'Email' });
+  emailBtnSendOtp.click();
 
   await enterOtpCode(authClient, page);
 
