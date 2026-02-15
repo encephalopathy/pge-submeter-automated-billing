@@ -1,6 +1,6 @@
 import { test, expect, Locator, Page } from '@playwright/test';
 import * as dotenv from 'dotenv';
-import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.js';
 import { calculateGasBill, assemblePaymentRequestTargets } from '../common/bill-calculator';
 import { getGmailAuth, getMessage, getOTP, sendBill } from '../common/gmail-client';
 import { OAuth2Client } from 'google-auth-library';

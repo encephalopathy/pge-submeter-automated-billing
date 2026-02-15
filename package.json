@@ -19,6 +19,6 @@
     },
     "dependencies": {
         "googleapis": "^169.0.0",
-        "pdfjs-dist": "^5.4.449"
+        "pdfjs-dist": "^3.11.174"
     }
 }
