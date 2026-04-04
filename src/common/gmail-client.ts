@@ -65,7 +65,31 @@ export async function sendBill(auth: any,
     const amount = emailRequest.amount;
     const gmail = google.gmail({ version: 'v1', auth });
 
-  // 1. Construct the Bilingual Body
+    const zellePaymentReceived = await getMessage(auth, 'email@transfers.ally.com subject:We deposited your Zelle payment');
+    
+    // 1. Check if a Zelle payment email has been received in the last 7 days that matches the amount and address. If so, skip sending the email.
+    if (zellePaymentReceived && zellePaymentReceived.date instanceof Date && (Date.now() - zellePaymentReceived.date.getTime()) < 86400000 * 7) { // 7-day window
+      const zellePaymentMsg = zellePaymentReceived.msg?.toLowerCase() ?? "";
+      // Captures the first three words of the address to check for a match in the email, since the full address may not be included in the Zelle payment notification email. This is a heuristic to increase the likelihood of correctly identifying relevant payment emails without requiring an exact full address match.
+      const firstThreeAddressWords = address
+                                      .replace(/[^a-zA-Z0-9\s]/g, '') // Removes special characters, keeps spaces
+                                      .trim()
+                                      .split(/\s+/)
+                                      .slice(0, 3)
+                                      .join(" ")
+                                      .toLowerCase();
+
+      if (!zellePaymentMsg || !zellePaymentMsg.includes(firstThreeAddressWords) || !zellePaymentMsg.includes(amount.toFixed(2))) {
+          console.log('Zelle payment received no email will be sent.');
+          return;
+      }
+    }
+    else {
+      console.log('Zelle payment received but not within the last 7 days.');
+      return;
+    }
+
+  // 2. Construct the email content
   const emailLines = [
     `To: ${to}`,
     `Subject: Your Gas Bill Usage / Su Consumo de Gas - ${address}`,
@@ -87,14 +111,14 @@ export async function sendBill(auth: any,
 
   const email = emailLines.join('\r\n');
 
-  // 2. Encode to Base64url
+  // 3. Encode to Base64url
   const encodedMessage = Buffer.from(email)
     .toString('base64')
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
     .replace(/=+$/, '');
 
-  // 3. Send via Gmail API
+  // 4. Send via Gmail API
   try {
     const res = await gmail.users.messages.send({
       userId: 'me',
