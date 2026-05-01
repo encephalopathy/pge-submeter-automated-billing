@@ -86,7 +86,6 @@ export async function sendBill(auth: any,
     }
     else {
       console.log('Zelle payment received but not within the last 7 days.');
-      return;
     }
 
   // 2. Construct the email content
