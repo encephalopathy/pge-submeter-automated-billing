@@ -3,12 +3,17 @@ name: Send PG&E Gas Bill Tenants
 on:
   workflow_dispatch:
   schedule:
-    # Runs at 10:00 AM PST (18:00 UTC) on the 27th–31st
-    - cron: '0 18 27-31 * *'
+    # Runs daily at:
+    # - 5:00 PM PST (winter)
+    # - 6:00 PM PDT (summer)
+    - cron: '0 1 * * *'
 
 jobs:
   screen-scrape-and-send-bill:
     runs-on: ubuntu-latest
+
+    env:
+      TZ: America/Los_Angeles
 
     steps:
       # ----------------------------------------
@@ -43,6 +48,8 @@ jobs:
           ADDRESS_MAIN_RECIEPIENTS: ${{ secrets.ADDRESS_MAIN_RECIEPIENTS }}
           ADDRESS_ADU_RECIEPIENTS: ${{ secrets.ADDRESS_ADU_RECIEPIENTS }}
         run: |
+          echo "Current local time:"
+          date
           xvfb-run --server-args="-screen 0 1280x1024x24" npm run bot:headed
       
       - name: Upload Playwright Report
